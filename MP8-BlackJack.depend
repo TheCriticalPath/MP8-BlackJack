@@ -1,0 +1,24 @@
+# depslib dependency file v1.0
+1417035863 source:c:\users\tclark\documents\code blocks\mp8-blackjack\main.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<stdbool.h>
+	"card.h"
+	"deck.h"
+
+1417031496 c:\users\tclark\documents\code blocks\mp8-blackjack\card.h
+
+1417028019 source:c:\users\tclark\documents\code blocks\mp8-blackjack\card.c
+	"card.h"
+	<stdio.h>
+
+1417035768 source:c:\users\tclark\documents\code blocks\mp8-blackjack\deck.c
+	"deck.h"
+	"card.h"
+	<stdlib.h>
+	<ctype.h>
+
+1417035457 c:\users\tclark\documents\code blocks\mp8-blackjack\deck.h
+	"card.h"
+
