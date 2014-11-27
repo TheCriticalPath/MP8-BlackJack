@@ -11,11 +11,13 @@
 int main()
 {
     deck_t deck;
-    initializeDeck(deck);
+    deck = initializeDeck(deck);
     card_t card;
     card.Suit = Clubs;
     card.Value = Ace_11;
     print_card(card);
+    printDeck(deck);
+    deck = shuffleDeck(deck);
     printDeck(deck);
         printf("Hello world!\n");
     return 0;
