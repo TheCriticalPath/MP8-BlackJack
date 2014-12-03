@@ -16,6 +16,7 @@ shoe_t initial_shoe(int num_decks){
     shoe.cards = malloc(num_decks * DEFAULT_DECK_SIZE * sizeof(card_t));
     shoe.num_decks = num_decks;
     shoe.next_card = 0;
+    posCard = 0;
     sizSuit = sizeof(ArrCardSuitName)/sizeof(ArrCardSuitName[0]);
     sizValue = sizeof(ArrCardValues)/sizeof(ArrCardValues[0]) - 1;
     for(cntDeck = 0; cntDeck < num_decks; cntDeck++){
@@ -24,8 +25,7 @@ shoe_t initial_shoe(int num_decks){
             card.Suit = cntSuit;
             for(cntValue = 0; cntValue<sizValue;cntValue++){
               card.Value = cntValue;
-              posCard = cntValue+(cntSuit*sizValue);
-              shoe.cards[posCard] = card;
+              shoe.cards[posCard++] = card;
             }
         }
     }
