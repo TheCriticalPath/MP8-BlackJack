@@ -39,13 +39,17 @@
 			<Option weight="55" />
 		</Unit>
 		<Unit filename="card.h" />
-		<Unit filename="deck.c">
+		<Unit filename="hand.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="deck.h" />
+		<Unit filename="hand.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="shoe.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="shoe.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

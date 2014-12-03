@@ -17,7 +17,7 @@ shoe_t initial_shoe(int num_decks){
     shoe.num_decks = num_decks;
     shoe.next_card = 0;
     sizSuit = sizeof(ArrCardSuitName)/sizeof(ArrCardSuitName[0]);
-    sizValue = sizeof(ArrCardValues)/sizeof(ArrCardValues[0]);
+    sizValue = sizeof(ArrCardValues)/sizeof(ArrCardValues[0]) - 1;
     for(cntDeck = 0; cntDeck < num_decks; cntDeck++){
         for(cntSuit = 0; cntSuit < sizSuit;cntSuit++){
             card_t card;

@@ -24,7 +24,7 @@ typedef enum Value_Enum{
 } Card_Values;
 
 /* Constants */
-const int ArrCardValues[] = {1,2,3,4,5,6,7,8,9,10,10,10,10};
+const int ArrCardValues[] = {1,2,3,4,5,6,7,8,9,10,10,10,10,11};
 const char* ArrCardValueName[] = {"Ace","2","3","4","5","6","7","8","9","10","Jack","Queen","King"};
 const char* ArrCardSuitName[] = {"Hearts","Diamonds","Spades","Clubs"};
 /* Structures */

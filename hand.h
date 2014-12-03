@@ -7,4 +7,8 @@ struct hand_t{
     int num_cards;
 };
 
+hand_t empty_hand();
+void print_hand(hand_t);
+void add_card_to_hand(hand_t*,card_t);
+int blackjack_value(hand_t)
 #endif // HAND_H_INCLUDED
