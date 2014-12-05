@@ -46,6 +46,7 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="main_flat.txt" />
 		<Unit filename="shoe.c">
 			<Option compilerVar="CC" />
 		</Unit>
