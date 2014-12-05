@@ -1,0 +1,473 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdbool.h>
+#include <time.h>
+#define DEFAULT_BANK_AMOUNT 1000.00
+#define DEFAULT_DECK_SIZE 52
+#define DEFAULT_DECK_COUNT 1
+#define TEST true
+
+/***********************************************************/
+/** CARD Enumerations                                      */
+/***********************************************************/
+typedef enum Suit_Enum
+{
+    Hearts,
+    Diamonds,
+    Spades,
+    Clubs
+} Card_Suits;
+
+typedef enum Value_Enum
+{
+    Ace,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Ten,
+    Jack,
+    Queen,
+    King
+} Card_Values;
+
+/***********************************************************/
+/** CARD Constants                                         */
+/***********************************************************/
+const int ArrCardValues[] = {1,2,3,4,5,6,7,8,9,10,10,10,10,11};
+const char* ArrCardValueName[] = {"Ace","2","3","4","5","6","7","8","9","10","Jack","Queen","King"};
+const char* ArrCardSuitName[] = {"Hearts","Diamonds","Spades","Clubs"};
+/***********************************************************/
+/** CARD Structures                                        */
+/***********************************************************/
+typedef struct card_t card_t;
+struct card_t
+{
+    Card_Suits Suit;
+    Card_Values Value;
+};
+/***********************************************************/
+/** CARD Prototypes                                        */
+/***********************************************************/
+void print_card(card_t);
+int points(card_t);
+
+/***********************************************************/
+/** HAND Structures                                        */
+/***********************************************************/
+typedef struct hand_t hand_t;
+struct hand_t
+{
+    card_t cards[21];
+    int num_cards;
+};
+
+/***********************************************************/
+/** HAND Prototypes                                        */
+/***********************************************************/
+hand_t empty_hand();
+void print_hand(hand_t);
+void add_card_to_hand(hand_t*,card_t);
+int blackjack_value(hand_t);
+/***********************************************************/
+/** SHOE Structures                                        */
+/***********************************************************/
+typedef struct shoe_t shoe_t;
+struct shoe_t
+{
+    int num_decks;
+    int next_card;
+    card_t *cards;
+};
+/***********************************************************/
+/** SHOE Prototypes                                        */
+/***********************************************************/
+shoe_t initial_shoe(int);
+void reshuffle(shoe_t *shoe);
+card_t draw_card(shoe_t *shoe);
+int cards_left(shoe_t shoe);
+void free_shoe(shoe_t *shoe);
+
+/***********************************************************/
+/** MAIN Prototypes                                        */
+/***********************************************************/
+void print_greeting();
+void initialize_game(shoe_t*,double *);
+void get_bet(double*,double);
+void get_num_decks(int*);
+void print_info(double , shoe_t );
+char get_user_action();
+
+/***********************************************************/
+/** MAIN Functions                                         */
+/***********************************************************/
+int main()
+{
+    // Variables
+    hand_t player;      // Hand structure for the player
+    hand_t dealer;      // Hand structure for the dealer
+
+    char action;        // variable to hold player's Hit or Stand action.
+    bool isBlackJack;   // variable to hold player's blackjack check.
+
+    shoe_t shoe;        // shoe
+    double stake;       // player's bank
+    double bet = 0;     // player's bet
+
+    // Intro routines
+    print_greeting();
+    initialize_game(&shoe,&stake);
+    print_info(stake,shoe);
+    get_bet(&bet,stake);
+    while (bet > 0 && stake > 0)
+    {
+        //clear hand and reset isBlackJack indicator
+        isBlackJack = false;
+        player = empty_hand();
+        dealer = empty_hand();
+
+        // deal out the first four cards.
+        add_card_to_hand(&player,draw_card(&shoe));
+        add_card_to_hand(&dealer,draw_card(&shoe));
+        add_card_to_hand(&player,draw_card(&shoe));
+        add_card_to_hand(&dealer,draw_card(&shoe));  // This card is hidden until the end.
+
+        // Show the dealers first card
+        printf("The dealer is showing ");
+        print_card(dealer.cards[0]);
+        printf("\n");
+
+        // Show the player's cards.
+        printf("Your cards:\n");
+        print_hand(player);
+
+        // If the player has 21 after the initial deal "Blackjack" no prompt to Hit/Stand.
+        if (blackjack_value(player) == 21)
+        {
+            isBlackJack = true;
+        }
+        else
+        {
+            // get Hit or Stand action
+            action = get_user_action();
+            while (action == 'H')
+            {
+                //It's a hit, we must add card to player's hand
+                add_card_to_hand(&player,draw_card(&shoe));
+                // Show the player's cards.
+                printf("Your cards:\n");
+                print_hand(player);
+                // Break if the player busts
+                if (blackjack_value(player) >= 21)
+                {
+                    break;
+                }
+                else
+                {
+                    // get Hit or Stand action
+                    action = get_user_action();
+                }
+            }
+        }
+
+        if(blackjack_value(player) <= 21)
+        {
+            //Player did not bust.
+            //Only play dealers hand if the player did not black jack
+            if(!isBlackJack)
+            {
+                //play dealers hand.  Hit if dealer less than 17.
+                while(blackjack_value(dealer) < 17)
+                {
+                    add_card_to_hand(&dealer,draw_card(&shoe));
+                }
+            }
+
+            // Show the dealer's cards.
+            printf("\nDealer's cards:\n");
+            print_hand(dealer);
+
+            if(blackjack_value(dealer) > 21)
+            {
+                // If dealer busted, the player wins
+                printf("Dealer busts.  You win %.2lf\n",bet);
+                stake += bet;
+            }
+            else if (blackjack_value(dealer) == blackjack_value(player))
+            {
+                // If player and dealer tie, it's a push.
+                printf("Game is a push!\n");
+            }
+            else if (blackjack_value(dealer) < blackjack_value(player))
+            {
+                // Player wins
+                if(isBlackJack)
+                {
+                    //BlackJack pays 3/2
+                    printf("Blackjack!  You win %.2lf\n",bet*1.5);
+                    stake += (bet * 1.5);
+                }
+                else
+                {
+                    //Non BlackJack win pays 1/1
+                    printf("Dealer had %d\n",blackjack_value(dealer));
+                    printf("You win %.2lf\n",bet);
+                    stake += bet;
+                }
+            }
+            else
+            {
+                //Dealer won.
+                printf("Dealer wins with %d\n", blackjack_value(dealer));
+                stake -= bet;
+            }
+        }
+        else
+        {
+            // Player busted.
+            printf("You busted. You lose.\n");
+            stake -= bet;
+        }
+
+        if(stake <= 0 )
+        {
+            // If the player has lost all of their money let them know.
+            printf("You're busted!  Goodbye!");
+        }
+        else
+        {
+            // Start the next hand
+            print_info(stake,shoe);
+            get_bet(&bet,stake);
+            while (bet == 0 || bet > stake)
+            {
+                printf("Invalid entry.\n");
+                get_bet(&bet,stake);
+            }
+            // If the player decides to quit let them know how they did.
+            if(bet < 0 && stake > DEFAULT_BANK_AMOUNT)
+            {
+                printf("You won $%.2lf! Great job beating the Dealer.",stake);
+            }
+            else if(bet < 0)
+            {
+                printf("Not bad! You still have $%.2lf. Better to quit before you lose it all.",stake);
+            }
+        }
+    }
+    return 0;
+}
+
+void initialize_game(shoe_t* shoe,double* stake)
+{
+    int deckCount = 0;
+    get_num_decks(&deckCount);
+    (*shoe) = initial_shoe(deckCount);
+    (*stake) = DEFAULT_BANK_AMOUNT;
+}
+
+void get_num_decks(int *deckCount)
+{
+    printf("How many decks do you wish to play with (1-10)? ");
+    scanf("%i",deckCount);
+    getchar( ); //remove \n from input
+    while((*deckCount) < 1 || (*deckCount) > 10)
+    {
+        printf("Invalid entry.\n");
+        printf("How many decks do you wish to play with (1-10)? ");
+        scanf("%i",deckCount);
+        getchar( ); //remove \n from input
+    }
+}
+
+char get_user_action()
+{
+    char action;
+    printf("Do you want to (H)it or (S)tand? ");
+    scanf (" %c",&action); // space before %c to ignore whitespace.
+    getchar( ); //remove \n from input
+    action = toupper(action);
+    while (action != 'H' && action != 'S')
+    {
+        printf("Invalid entry.\n");
+        printf("Do you want to (H)it or (S)tand? ");
+        scanf (" %c",&action); // space before %c to ignore whitespace.
+        action = toupper(action);
+    }
+    return action;
+}
+
+void get_bet(double* bet,double stake)
+{
+    printf("Enter your bet (negative to quit): ");
+    scanf("%lf",bet);
+    getchar( ); //remove \n from input
+    while ((*bet) == 0 || (*bet) > stake)
+    {
+        printf("Invalid entry.\n");
+        printf("Enter your bet (negative to quit): ");
+        scanf("%lf",bet);
+        getchar( ); //remove \n from input
+    }
+}
+
+void print_greeting()
+{
+    printf("Welcome to Blackjack!\n\n");
+}
+
+void print_info(double stake, shoe_t shoe)
+{
+    printf("Your stake is: $%.2lf\n", stake);
+    printf("Cards left in shoe: %d\n", cards_left(shoe));
+}
+
+/***********************************************************/
+/** SHOE Functions                                         */
+/***********************************************************/
+shoe_t initial_shoe(int num_decks)
+{
+    int cntDeck = 0;
+    int cntSuit = 0;
+    int cntValue = 0;
+    int posCard=0;
+    int sizSuit = 0;
+    int sizValue = 0;
+    shoe_t shoe;
+    shoe.cards = malloc(num_decks * DEFAULT_DECK_SIZE * sizeof(card_t));
+    shoe.num_decks = num_decks;
+    shoe.next_card = 0;
+    posCard = 0;
+    sizSuit = sizeof(ArrCardSuitName)/sizeof(ArrCardSuitName[0]);
+    sizValue = sizeof(ArrCardValues)/sizeof(ArrCardValues[0]) - 1;
+    for(cntDeck = 0; cntDeck < num_decks; cntDeck++)
+    {
+        for(cntSuit = 0; cntSuit < sizSuit; cntSuit++)
+        {
+            card_t card;
+            card.Suit = cntSuit;
+            for(cntValue = 0; cntValue<sizValue; cntValue++)
+            {
+                card.Value = cntValue;
+                shoe.cards[posCard++] = card;
+            }
+        }
+    }
+
+    reshuffle(&shoe);
+
+    return shoe;
+}
+
+card_t draw_card(shoe_t *shoe)
+{
+    card_t card;
+    if (shoe->next_card >= shoe->num_decks * DEFAULT_DECK_SIZE)
+    {
+        shoe->next_card = 0;
+        reshuffle(shoe);
+    }
+    card = shoe->cards[shoe->next_card];
+    shoe->next_card++;
+    return card;
+}
+
+int cards_left(shoe_t shoe)
+{
+    return (shoe.num_decks * DEFAULT_DECK_SIZE)-shoe.next_card;
+}
+
+void reshuffle(shoe_t *shoe)
+{
+    //Knuth Shuffle
+    printf("SHUFFLING\n");
+    /* Initialize random number generator */
+    srand(time(0));
+    int sizShoe = shoe->num_decks * DEFAULT_DECK_SIZE;
+    int lcv = 0;
+    int rnd = 0;
+    card_t tmpCard;
+
+    for(lcv = sizShoe-1; lcv > 0; lcv--)
+    {
+        rnd = (rand() % lcv);
+        if(lcv != rnd)
+        {
+            tmpCard = shoe->cards[lcv];
+            shoe->cards[lcv] = shoe->cards[rnd];
+            shoe->cards[rnd] = tmpCard;
+        }
+    }
+}
+
+void free_shoe(shoe_t *shoe)
+{
+    free(shoe);
+}
+
+/***********************************************************/
+/** HAND Functions                                         */
+/***********************************************************/
+hand_t empty_hand()
+{
+
+    hand_t hand;
+    hand.num_cards = 0;
+    return hand;
+}
+void print_hand(hand_t hand)
+{
+
+    int lcv;
+    for(lcv = 0; lcv < hand.num_cards; lcv++)
+    {
+        printf("  ");
+        print_card(hand.cards[lcv]);
+    }
+    printf("Score = %d\n",blackjack_value(hand));
+}
+void add_card_to_hand(hand_t *hand, card_t card)
+{
+
+    hand->cards[hand->num_cards] = card;
+    hand->num_cards++;
+}
+int blackjack_value(hand_t hand)
+{
+    int total;
+    int lcv;
+    int value;
+    bool isAce;
+    total = 0;
+    isAce = false;
+    for(lcv = 0; lcv < hand.num_cards; lcv++)
+    {
+        value = points(hand.cards[lcv]);
+        if (value == 1)
+        {
+            isAce = true;
+        }
+        total += value;
+    }
+    return (isAce && total <= 11) ? total + 10 : total;
+}
+
+/***********************************************************/
+/** CARD Functions                                         */
+/***********************************************************/
+void print_card(card_t card)
+{
+
+    printf("%s of %s\n",ArrCardValueName[card.Value],ArrCardSuitName[card.Suit]);
+}
+int points(card_t card)
+{
+    return ArrCardValues[card.Value];
+}
+

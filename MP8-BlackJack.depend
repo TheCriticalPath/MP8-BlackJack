@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1417633509 source:c:\users\tclark\documents\code blocks\mp8-blackjack\main.c
+1417787580 source:c:\users\tclark\documents\code blocks\mp8-blackjack\main.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -8,9 +8,9 @@
 	"shoe.h"
 	"hand.h"
 
-1417469083 c:\users\tclark\documents\code blocks\mp8-blackjack\card.h
+1417787579 c:\users\tclark\documents\code blocks\mp8-blackjack\card.h
 
-1417622387 source:c:\users\tclark\documents\code blocks\mp8-blackjack\card.c
+1417787580 source:c:\users\tclark\documents\code blocks\mp8-blackjack\card.c
 	"card.h"
 	<stdio.h>
 
@@ -24,11 +24,11 @@
 1417438055 c:\users\tclark\documents\code blocks\mp8-blackjack\deck.h
 	"card.h"
 
-1417463680 c:\users\tclark\documents\code blocks\mp8-blackjack\shoe.h
+1417787580 c:\users\tclark\documents\code blocks\mp8-blackjack\shoe.h
 	"shoe.h"
 	"card.h"
 
-1417629146 source:c:\users\tclark\documents\code blocks\mp8-blackjack\shoe.c
+1417787580 source:c:\users\tclark\documents\code blocks\mp8-blackjack\shoe.c
 	"shoe.h"
 	"card.h"
 	<stdlib.h>
@@ -36,12 +36,12 @@
 	<stdio.h>
 	<time.h>
 
-1417632530 source:c:\users\tclark\documents\code blocks\mp8-blackjack\hand.c
+1417787580 source:c:\users\tclark\documents\code blocks\mp8-blackjack\hand.c
 	"hand.h"
 	"card.h"
 	<stdbool.h>
 	<stdio.h>
 
-1417621885 c:\users\tclark\documents\code blocks\mp8-blackjack\hand.h
+1417787580 c:\users\tclark\documents\code blocks\mp8-blackjack\hand.h
 	"card.h"
 
